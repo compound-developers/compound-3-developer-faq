@@ -2,7 +2,7 @@
 
 This repository contains code examples for frequent Compound III developer tasks.
 
-## How to call methods on the Comet Contract
+## How to call Comet methods
 
 Compound III has several contract files that make up the public Comet interface. The address of the upgradable proxy contract is used to call methods in Comet.sol, CometExt.sol, and CometCore.sol.
 
