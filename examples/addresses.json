@@ -1,0 +1,13 @@
+{
+  "mainnet": {},
+  "kovan": {
+    "comet": "0xc5c5B44F45C256552A7622f12EcC5996B4752601",
+    "bulker": "0x89ad87Bf45E2b72321C0a8018Ad7097fe560B50E",
+    "WETH": "0xB5d00ca1344CF24F537ec084c8b0925D9336c9A6",
+    "WBTC": "0xbe8853703FcB8F5D7ffe55619d89c7F3d43D854e",
+    "USDC": "0x5014657d8Af6B2763db479dEbf41a8fddf2bAa0B",
+    "WBTC_Price_Feed": "0x6135b13325bfC4B00278B4abC5e20bbce2D6580e",
+    "USDC_Price_Feed": "0x9211c6b3bf41a10f78539810cf5c64e1bb78ec60"
+  },
+  "fuji": {}
+}
