@@ -30,7 +30,7 @@ See `contracts/MyContract.sol` for Solidity examples, and also the individual Ja
 
 ## Deploying Compound III
 
-To deploy to a public blockchain, see the `yarn deploy` instructions in the (README file of the Comet repository)[https://github.com/compound-finance/comet#multi-chain-support]. Be sure to first use the `spider` command to pull in the network's existing configuration and latest contract addresses.
+To deploy to a public blockchain, see the `yarn deploy` instructions in the [README file of the Comet repository](https://github.com/compound-finance/comet#multi-chain-support). Be sure to first use the `spider` command to pull in the network's existing configuration and latest contract addresses.
 
 Compound III can be deployed to EVM compatible blockchains. Here is an example for deploying to a locally run Ethereum node.
 
