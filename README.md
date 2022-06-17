@@ -71,8 +71,11 @@ See `contracts/MyContract.sol` for Solidity examples, and also the individual Ja
 - How do I get the borrow and liquidate collateral factors for a Compound III asset?
 - How do I get the principal amount of asset for a Compound III account?
 - How do I calcualte the interest earned by a Compound III account?
-- TODO: How do I fully repay my borrow precisely? (use bulker)
+- TODO: How do I repay my whole borrow precisely?
+- TODO: How do I transfer all of my base asset within the protocol precisely?
 - TODO: How do I find out the TVL? (whole protocol example and per collateral example)
+- TODO: How do I calculate the APR of COMP rewards?
+- TODO: How do I find out the amount of COMP rewards currently accrued for my account?
 
 ## Running Examples
 
