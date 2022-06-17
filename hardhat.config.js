@@ -2,9 +2,14 @@ require('@nomiclabs/hardhat-ethers');
 
 // const providerUrl = process.env.FUJI_PROVIDER_URL;
 // const blockNumber = 6184762;
+// const chainId = 1; // 43113
 
 const providerUrl = process.env.KOVAN_PROVIDER_URL;
-const blockNumber = 31572260;
+const blockNumber = 32197500;
+const chainId = 42;
+
+// Do not use this mnemonic outside of localhost tests!
+const mnemonic = 'romance zebra roof insect stem water kiwi park acquire domain gossip second';
 
 if (!providerUrl) {
   console.error('Missing JSON RPC provider URL as environment variable `FUJI_PROVIDER_URL`');
@@ -24,24 +29,8 @@ module.exports = {
     }
   },
   networks: {
-    //// AVAX TESTNET
-    // hardhat: {
-    //   chainId: 1, // 43113
-    //   forking: {
-    //     url: providerUrl,
-    //     blockNumber,
-    //   },
-    //   gasPrice: 0,
-    //   initialBaseFeePerGas: 0,
-    //   loggingEnabled: false,
-    //   accounts: {
-    //     mnemonic: 'romance zebra roof insect stem water kiwi park acquire domain gossip second',
-    //   },
-    // },
-
-    //// KOVAN
     hardhat: {
-      chainId: 42,
+      chainId,
       forking: {
         url: providerUrl,
         blockNumber,
@@ -50,7 +39,7 @@ module.exports = {
       initialBaseFeePerGas: 0,
       loggingEnabled: false,
       accounts: {
-        mnemonic: 'romance zebra roof insect stem water kiwi park acquire domain gossip second',
+        mnemonic
       },
     },
   },

@@ -15,8 +15,9 @@ const myContractAbi = [
 ];
 
 const cometAbi = [
-  'function getSupplyRate() public view returns (uint)',
-  'function getBorrowRate() public view returns (uint)',
+  'function getSupplyRate(uint) public view returns (uint)',
+  'function getBorrowRate(uint) public view returns (uint)',
+  'function getUtilization() public view returns (uint)',
 ];
 
 let jsonRpcServer, deployment, cometAddress, myContractFactory;
@@ -50,28 +51,31 @@ describe('Calculating the Compound III APRs', function () {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
-    const supplyApr = await comet.callStatic.getSupplyRate();
-    console.log('\tJS - Supply APR', +(supplyApr).toString() / 1e18 * 100, '%');
+    const secondsPerYear = 60 * 60 * 24 * 365;
+    const utilization = await comet.callStatic.getUtilization();
+    const supplyApr = await comet.callStatic.getSupplyRate(utilization);
+    console.log('\tJS - Supply APR', +(supplyApr).toString() / 1e18 * secondsPerYear, '%');
   });
 
   it('Calculates the Borrow APR using JavaScript', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
-    const supplyApr = await comet.callStatic.getBorrowRate();
-    console.log('\tJS - Borrow APR', +(supplyApr).toString() / 1e18 * 100, '%');
+    const secondsPerYear = 60 * 60 * 24 * 365;
+    const utilization = await comet.callStatic.getUtilization();
+    const borrowApr = await comet.callStatic.getBorrowRate(utilization);
+    console.log('\tJS - Borrow APR', +(borrowApr).toString() / 1e18 * secondsPerYear, '%');
   });
 
   it('Runs the solidity examples', async () => {
-
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
 
     const supplyApr = await MyContract.callStatic.getSupplyApr();
     const borrowApr = await MyContract.callStatic.getBorrowApr();
 
-    console.log('\tSolidity - Supply APR:', +(supplyApr).toString() / 1e18 * 100, '%');
-    console.log('\tSolidity - Borrow APR:', +(borrowApr).toString() / 1e18 * 100, '%');
+    console.log('\tSolidity - Supply APR:', +(supplyApr).toString() / 1e18, '%');
+    console.log('\tSolidity - Borrow APR:', +(borrowApr).toString() / 1e18, '%');
   });
 });
 

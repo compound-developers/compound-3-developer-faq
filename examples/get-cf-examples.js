@@ -7,19 +7,20 @@ const net = 'kovan';
 
 const jsonRpcUrl = 'http://127.0.0.1:8545';
 const providerUrl = hre.config.networks.hardhat.forking.url;
-// const blockNumber = hre.config.networks.hardhat.forking.blockNumber;
-const blockNumber = 9338786;
+const blockNumber = hre.config.networks.hardhat.forking.blockNumber;
 
 const cometAbi = [
   'event Supply(address indexed from, address indexed dst, uint256 amount)',
   'function balanceOf(address account) returns (uint256)',
+  { "inputs":[{"internalType":"address","name":"asset","type":"address"}],"name":"getAssetInfoByAddress","outputs":[{"components":[{"internalType":"uint8","name":"offset","type":"uint8"},{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint64","name":"scale","type":"uint64"},{"internalType":"uint64","name":"borrowCollateralFactor","type":"uint64"},{"internalType":"uint64","name":"liquidateCollateralFactor","type":"uint64"},{"internalType":"uint64","name":"liquidationFactor","type":"uint64"},{"internalType":"uint128","name":"supplyCap","type":"uint128"}],"internalType":"struct CometCore.AssetInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function" },
 ];
 
-const baseAbi = [
-  'function decimals() returns (uint)'
+const myContractAbi = [
+  'function getBorrowCollateralFactor(address asset) public view returns (uint)',
+  'function getLiquidateCollateralFactor(address) public view returns (uint)',
 ];
 
-let jsonRpcServer, deployment, cometAddress, myContractFactory, baseAssetAddress, usdcAddress;
+let jsonRpcServer, deployment, cometAddress, myContractFactory, baseAssetAddress, usdcAddress, wbtcAddress;
 
 const mnemonic = hre.network.config.accounts.mnemonic;
 const addresses = [];
@@ -44,6 +45,7 @@ describe("Find a Compound III asset collateral factors", function () {
 
     baseAssetAddress = networks[net].USDC;
     usdcAddress = baseAssetAddress;
+    wbtcAddress = networks[net].WBTC;
     cometAddress = networks[net].comet;
     myContractFactory = await hre.ethers.getContractFactory('MyContract');
   });
@@ -61,15 +63,22 @@ describe("Find a Compound III asset collateral factors", function () {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
-    const borrowCollateralFactor = (await comet.callStatic.getAssetInfoByAddress(usdcAddress)).borrowCollateralFactor;
-    const liquidateCollateralFactor = (await comet.callStatic.getAssetInfoByAddress(usdcAddress)).liquidateCollateralFactor;
+    const borrowCollateralFactor = (await comet.callStatic.getAssetInfoByAddress(wbtcAddress)).borrowCollateralFactor;
+    const liquidateCollateralFactor = (await comet.callStatic.getAssetInfoByAddress(wbtcAddress)).liquidateCollateralFactor;
 
-    console.log('borrowCollateralFactor', borrowCollateralFactor);
-    console.log('liquidateCollateralFactor', liquidateCollateralFactor);
+    console.log('\tborrowCollateralFactor', +borrowCollateralFactor.toString() / 1e18 * 100);
+    console.log('\tliquidateCollateralFactor', +liquidateCollateralFactor.toString() / 1e18 * 100);
   });
 
   it('Runs the solidity examples', async () => {
-    // TODO: awaiting getAssetInfoByAddress before creating this example
+    const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
+    const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
+
+    const borrowCollateralFactor = (await MyContract.callStatic.getBorrowCollateralFactor(wbtcAddress));
+    const liquidateCollateralFactor = (await MyContract.callStatic.getLiquidateCollateralFactor(wbtcAddress));
+
+    console.log('\tSolidity - borrowCollateralFactor', +borrowCollateralFactor.toString() / 1e18 * 100);
+    console.log('\tSolidity - liquidateCollateralFactor', +liquidateCollateralFactor.toString() / 1e18 * 100);
   });
 });
 

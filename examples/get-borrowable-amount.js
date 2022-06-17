@@ -14,7 +14,6 @@ const myContractAbi = [
 ];
 
 const cometAbi = [
-  'function getBorrowLiquidity(address account) returns (int256)',
   'function numAssets() returns (uint8)',
   'function getAssetInfo(uint8 i) public view returns (tuple(uint8 offset, address asset, address priceFeed, uint64 scale, uint64 borrowCollateralFactor, uint64 liquidateCollateralFactor, uint64 liquidationFactor, uint128 supplyCap) memory)',
   'function collateralBalanceOf(address account, address asset) external view returns (uint128)',
@@ -22,9 +21,10 @@ const cometAbi = [
   'function baseTokenPriceFeed() public view returns (address)',
   'function borrowBalanceOf(address account) external view returns (uint256)',
   'function decimals() external view returns (uint)',
+  'function userBasic(address) public returns (tuple(int104 principal, uint64 baseTrackingIndex, uint64 baseTrackingAccrued, uint16 assetsIn, uint8 _reserved) memory)',
 ];
 
-let jsonRpcServer, deployment, cometAddress, myContractFactory, baseAssetAddress;
+let jsonRpcServer, deployment, cometAddress, myContractFactory, baseAssetAddress, baseAssetPriceFeed;
 
 const mnemonic = hre.network.config.accounts.mnemonic;
 const addresses = [];
@@ -48,6 +48,7 @@ describe("Find an account's present limits on borrowing from Compound III", func
     await jsonRpcServer.listen();
 
     cometAddress = networks[net].comet;
+    baseAssetPriceFeed = networks[net].USDC_Price_Feed;
     myContractFactory = await hre.ethers.getContractFactory('MyContract');
   });
 
@@ -58,28 +59,6 @@ describe("Find an account's present limits on borrowing from Compound III", func
 
   after(async () => {
     await jsonRpcServer.close();
-  });
-
-  it('Finds the amount of base asset that can be borrowed', async () => {
-    const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
-    const comet = new ethers.Contract(cometAddress, cometAbi, provider);
-
-    const myAddress = addresses[0];
-    let borrowable = await comet.callStatic.getBorrowLiquidity(myAddress);
-    borrowable /= Math.pow(10, 8);
-
-    console.log('\tBase asset borrowable amount', borrowable);
-  });
-
-  it('Runs the solidity examples', async () => {
-    const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
-    const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
-
-    const myAddress = addresses[0];
-    let borrowable = await  MyContract.callStatic.getBorrowableAmount(myAddress);
-    borrowable /= Math.pow(10, 8);
-
-    console.log('\tSolidity - Base asset borrowable amount', borrowable);
   });
 
   it('Calculates the borrow capacity of an account that has supplied collateral', async () => {
@@ -135,6 +114,18 @@ describe("Find an account's present limits on borrowing from Compound III", func
     console.log('\tMaximum borrowable amount (base)', borrowCapacityBase);
     console.log('\tAlready Borrowed amount (base)', borrowedInBase);
   });
+
+  it('Runs the solidity examples', async () => {
+    const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
+    const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
+
+    const myAddress = addresses[0];
+    let borrowable = await  MyContract.callStatic.getBorrowableAmount(myAddress);
+    borrowable /= Math.pow(10, 8);
+
+    console.log('\tSolidity - Base asset borrowable amount', borrowable);
+  });
+
 });
 
 async function resetForkedChain() {

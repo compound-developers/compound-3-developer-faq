@@ -74,8 +74,8 @@ describe("Find out an asset's present price according to Compound III", function
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
 
-    const wbtcPriceFeed = '0x6135b13325bfC4B00278B4abC5e20bbce2D6580e';
-    const usdcPriceFeed = '0x9211c6b3bf41a10f78539810cf5c64e1bb78ec60';
+    const wbtcPriceFeed = networks[net].WBTC_Price_Feed;
+    const usdcPriceFeed = networks[net].USDC_Price_Feed;
 
     let wbtcPrice = await MyContract.callStatic.getCompoundPrice(wbtcPriceFeed);
     wbtcPrice /= Math.pow(10, 8);
