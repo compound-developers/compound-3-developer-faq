@@ -12,7 +12,7 @@ const chainId = 42;
 const mnemonic = 'romance zebra roof insect stem water kiwi park acquire domain gossip second';
 
 if (!providerUrl) {
-  console.error('Missing JSON RPC provider URL as environment variable `FUJI_PROVIDER_URL`');
+  console.error('Missing JSON RPC provider URL as environment variable. See hardhat.config.js.');
   process.exit(1);
 }
 
