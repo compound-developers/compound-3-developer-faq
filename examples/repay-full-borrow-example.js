@@ -74,47 +74,50 @@ describe("Repay an entire Compound III account's borrow", function () {
     const comet = new ethers.Contract(cometAddress, cometAbi, signer);
     const weth = new ethers.Contract(wethAddress, wethAbi, signer);
     const usdc = new ethers.Contract(usdcAddress, stdErc20Abi, signer);
+    const baseAssetMantissa = 1e6; // USDC has 6 decimal places
 
     let tx = await weth.deposit({ value: ethers.utils.parseEther('10') });
     await tx.wait(1);
 
-    console.log('Approving Comet to move WETH collateral...');
+    console.log('\tApproving Comet to move WETH collateral...');
     tx = await weth.approve(cometAddress, ethers.constants.MaxUint256);
     await tx.wait(1);
 
-    console.log('Sending initial supply to Compound...');
+    console.log('\tSending initial supply to Compound...');
     tx = await comet.supply(wethAddress, ethers.utils.parseEther('10'));
     await tx.wait(1);
 
-    const borrowSize = 1000; // baseBorrowMin is 1000 USDC
-    console.log('Executing initial borrow of the base asset from Compound...');
-    console.log('Borrow size:', borrowSize);
+    // Accounts cannot hold a borrow smaller than baseBorrowMin (1000 USDC).
+    const borrowSize = 1000;
+    console.log('\tExecuting initial borrow of the base asset from Compound...');
+    console.log('\tBorrow size:', borrowSize);
 
-    tx = await comet.withdraw(usdcAddress, (borrowSize * 1e6).toString());
+    tx = await comet.withdraw(usdcAddress, (borrowSize * baseAssetMantissa).toString());
     await tx.wait(1);
 
     let borrowBalance = await comet.callStatic.borrowBalanceOf(addresses[0]);
-    console.log('borrowBalance 1', +borrowBalance.toString() / 1e6);
+    console.log('\tBorrow Balance initial', +borrowBalance.toString() / baseAssetMantissa);
 
     // accrue some interest
+    console.log('\tFast forwarding 100 blocks to accrue some borrower interest...');
     await advanceBlockHeight(100);
 
     borrowBalance = await comet.callStatic.borrowBalanceOf(addresses[0]);
-    console.log('borrowBalance 2', +borrowBalance.toString() / 1e6);
+    console.log('\tBorrow Balance after some interest accrued', +borrowBalance.toString() / baseAssetMantissa);
 
-    // For example purposes, get extra USDC so we can pay off the accrued 
-    //     borrower interest
+    // For example purposes, get extra USDC so we can pay off the 
+    //     original borrow plus the accrued borrower interest
     await seedWithBaseToken(addresses[0], 5);
 
     tx = await usdc.approve(cometAddress, ethers.constants.MaxUint256);
     await tx.wait(1);
 
-    console.log('Repaying the entire borrow...');
+    console.log('\tRepaying the entire borrow...');
     tx = await comet.supply(usdcAddress, ethers.constants.MaxUint256);
     await tx.wait(1);
 
     borrowBalance = await comet.callStatic.borrowBalanceOf(addresses[0]);
-    console.log('borrowBalance 3', +borrowBalance.toString() / 1e6);
+    console.log('\tBorrow Balance after full repayment', +borrowBalance.toString() / baseAssetMantissa);
   });
 });
 

@@ -40,6 +40,7 @@ library CometStructs {
 }
 
 interface Comet {
+  function baseScale() external view returns (uint);
   function supply(address asset, uint amount) external;
   function withdraw(address asset, uint amount) external;
 
@@ -61,18 +62,32 @@ interface Comet {
   function numAssets() external view returns (uint8);
 
   function getUtilization() external view returns (uint);
+
+  function baseTrackingSupplySpeed() external view returns (uint);
+  function baseTrackingBorrowSpeed() external view returns (uint);
+
+  function totalSupply() external view returns (uint256);
+  function totalBorrow() external view returns (uint256);
+
+  function baseIndexScale() external pure returns (uint64);
 }
 
 interface ERC20 {
   function approve(address spender, uint256 amount) external returns (bool);
+  function decimals() external returns (uint);
 }
 
 contract MyContract {
   address public cometAddress;
-  uint constant public SECONDS_PER_YEAR = 60 * 60 * 24 * 365;
+  uint constant public MANTISSA = 1e18;
+  uint constant public DAYS_PER_YEAR = 365;
+  uint constant public SECONDS_PER_DAY = 60 * 60 * 24;
+  uint constant public SECONDS_PER_YEAR = SECONDS_PER_DAY * DAYS_PER_YEAR;
+  uint public BASE_MANTISSA;
 
   constructor(address _cometAddress) {
     cometAddress = _cometAddress;
+    BASE_MANTISSA = Comet(cometAddress).baseScale();
   }
 
   /*
@@ -81,7 +96,7 @@ contract MyContract {
   function getSupplyApr() public view returns (uint) {
     Comet comet = Comet(cometAddress);
     uint utilization = comet.getUtilization();
-    return comet.getSupplyRate(utilization) * SECONDS_PER_YEAR;
+    return comet.getSupplyRate(utilization) * SECONDS_PER_YEAR * 100;
   }
 
   /*
@@ -90,7 +105,41 @@ contract MyContract {
   function getBorrowApr() public view returns (uint) {
     Comet comet = Comet(cometAddress);
     uint utilization = comet.getUtilization();
-    return comet.getBorrowRate(utilization) * SECONDS_PER_YEAR;
+    return comet.getBorrowRate(utilization) * SECONDS_PER_YEAR * 100;
+  }
+
+  /*
+   * Get the current reward for supplying APR in Compound III
+   * @param rewardTokenPriceFeed The address of the reward token (e.g. COMP) price feed
+   * @return The reward APR in USD as a decimal scaled up by 1e18
+   */
+  function getRewardAprForSupplyBase(address rewardTokenPriceFeed) public view returns (uint) {
+    Comet comet = Comet(cometAddress);
+    uint rewardTokenPriceInUsd = getCompoundPrice(rewardTokenPriceFeed); // 3914996258
+    uint usdcPriceInUsd = getCompoundPrice(comet.baseTokenPriceFeed()); // 100067994
+    uint usdcTotalSupply = comet.totalSupply(); // 30752069471
+    uint baseIndexScale = comet.baseIndexScale(); // 1000000000000000
+    uint baseTrackingSupplySpeed = comet.baseTrackingSupplySpeed(); // 11574074074
+    uint rewardToSuppliersPerDay = baseTrackingSupplySpeed * SECONDS_PER_DAY * (baseIndexScale / BASE_MANTISSA);
+    uint supplyBaseRewardApr = (rewardTokenPriceInUsd * rewardToSuppliersPerDay / (usdcTotalSupply * usdcPriceInUsd)) * DAYS_PER_YEAR;
+    return supplyBaseRewardApr;
+  }
+
+  /*
+   * Get the current reward for borrowing APR in Compound III
+   * @param rewardTokenPriceFeed The address of the reward token (e.g. COMP) price feed
+   * @return The reward APR in USD as a decimal scaled up by 1e18
+   */
+  function getRewardAprForBorrowBase(address rewardTokenPriceFeed) public view returns (uint) {
+    Comet comet = Comet(cometAddress);
+    uint rewardTokenPriceInUsd = getCompoundPrice(rewardTokenPriceFeed); // 3914996258
+    uint usdcPriceInUsd = getCompoundPrice(comet.baseTokenPriceFeed()); // 100067994
+    uint usdcTotalBorrow = comet.totalBorrow(); // 30752069471
+    uint baseIndexScale = comet.baseIndexScale(); // 1000000000000000
+    uint baseTrackingBorrowSpeed = comet.baseTrackingBorrowSpeed(); // 11574074074
+    uint rewardToSuppliersPerDay = baseTrackingBorrowSpeed * SECONDS_PER_DAY * (baseIndexScale / BASE_MANTISSA);
+    uint borrowBaseRewardApr = (rewardTokenPriceInUsd * rewardToSuppliersPerDay / (usdcTotalBorrow * usdcPriceInUsd)) * DAYS_PER_YEAR;
+    return borrowBaseRewardApr;
   }
 
   /*
@@ -108,13 +157,13 @@ contract MyContract {
     int liquidity = int(
       presentValue(comet.userBasic(account).principal, si, bi) *
       int256(getCompoundPrice(baseTokenPriceFeed)) /
-      int256(1e6) // base token has 6 decimal places
+      int256(1e8)
     );
 
     for (uint8 i = 0; i < numAssets; i++) {
       if (isInAsset(assetsIn, i)) {
         CometStructs.AssetInfo memory asset = comet.getAssetInfo(i);
-        uint newAmount = uint(comet.userCollateral(account, asset.asset).balance) * getCompoundPrice(asset.priceFeed) / asset.scale;
+        uint newAmount = uint(comet.userCollateral(account, asset.asset).balance) * getCompoundPrice(asset.priceFeed) / 1e8;
         liquidity += int(
           newAmount * asset.borrowCollateralFactor / 1e18
         );
