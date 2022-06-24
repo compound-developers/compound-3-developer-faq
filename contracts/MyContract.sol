@@ -84,10 +84,12 @@ contract MyContract {
   uint constant public SECONDS_PER_DAY = 60 * 60 * 24;
   uint constant public SECONDS_PER_YEAR = SECONDS_PER_DAY * DAYS_PER_YEAR;
   uint public BASE_MANTISSA;
+  uint public BASE_INDEX_SCALE;
 
   constructor(address _cometAddress) {
     cometAddress = _cometAddress;
     BASE_MANTISSA = Comet(cometAddress).baseScale();
+    BASE_INDEX_SCALE = Comet(cometAddress).baseIndexScale();
   }
 
   /*
@@ -115,12 +117,11 @@ contract MyContract {
    */
   function getRewardAprForSupplyBase(address rewardTokenPriceFeed) public view returns (uint) {
     Comet comet = Comet(cometAddress);
-    uint rewardTokenPriceInUsd = getCompoundPrice(rewardTokenPriceFeed); // 3914996258
-    uint usdcPriceInUsd = getCompoundPrice(comet.baseTokenPriceFeed()); // 100067994
-    uint usdcTotalSupply = comet.totalSupply(); // 30752069471
-    uint baseIndexScale = comet.baseIndexScale(); // 1000000000000000
-    uint baseTrackingSupplySpeed = comet.baseTrackingSupplySpeed(); // 11574074074
-    uint rewardToSuppliersPerDay = baseTrackingSupplySpeed * SECONDS_PER_DAY * (baseIndexScale / BASE_MANTISSA);
+    uint rewardTokenPriceInUsd = getCompoundPrice(rewardTokenPriceFeed);
+    uint usdcPriceInUsd = getCompoundPrice(comet.baseTokenPriceFeed());
+    uint usdcTotalSupply = comet.totalSupply();
+    uint baseTrackingSupplySpeed = comet.baseTrackingSupplySpeed();
+    uint rewardToSuppliersPerDay = baseTrackingSupplySpeed * SECONDS_PER_DAY * (BASE_INDEX_SCALE / BASE_MANTISSA);
     uint supplyBaseRewardApr = (rewardTokenPriceInUsd * rewardToSuppliersPerDay / (usdcTotalSupply * usdcPriceInUsd)) * DAYS_PER_YEAR;
     return supplyBaseRewardApr;
   }
@@ -132,12 +133,11 @@ contract MyContract {
    */
   function getRewardAprForBorrowBase(address rewardTokenPriceFeed) public view returns (uint) {
     Comet comet = Comet(cometAddress);
-    uint rewardTokenPriceInUsd = getCompoundPrice(rewardTokenPriceFeed); // 3914996258
-    uint usdcPriceInUsd = getCompoundPrice(comet.baseTokenPriceFeed()); // 100067994
-    uint usdcTotalBorrow = comet.totalBorrow(); // 30752069471
-    uint baseIndexScale = comet.baseIndexScale(); // 1000000000000000
-    uint baseTrackingBorrowSpeed = comet.baseTrackingBorrowSpeed(); // 11574074074
-    uint rewardToSuppliersPerDay = baseTrackingBorrowSpeed * SECONDS_PER_DAY * (baseIndexScale / BASE_MANTISSA);
+    uint rewardTokenPriceInUsd = getCompoundPrice(rewardTokenPriceFeed);
+    uint usdcPriceInUsd = getCompoundPrice(comet.baseTokenPriceFeed());
+    uint usdcTotalBorrow = comet.totalBorrow();
+    uint baseTrackingBorrowSpeed = comet.baseTrackingBorrowSpeed();
+    uint rewardToSuppliersPerDay = baseTrackingBorrowSpeed * SECONDS_PER_DAY * (BASE_INDEX_SCALE / BASE_MANTISSA);
     uint borrowBaseRewardApr = (rewardTokenPriceInUsd * rewardToSuppliersPerDay / (usdcTotalBorrow * usdcPriceInUsd)) * DAYS_PER_YEAR;
     return borrowBaseRewardApr;
   }
@@ -201,13 +201,11 @@ contract MyContract {
     int104 principalValue_,
     uint64 baseSupplyIndex_,
     uint64 baseBorrowIndex_
-  ) internal pure returns (int104) {
-    uint64 BASE_INDEX_SCALE = 1e15;
-
+  ) internal view returns (int104) {
     if (principalValue_ >= 0) {
-      return int104(uint104(principalValue_) * baseSupplyIndex_ / BASE_INDEX_SCALE);
+      return int104(uint104(principalValue_) * baseSupplyIndex_ / uint64(BASE_INDEX_SCALE));
     } else {
-      return -int104(uint104(principalValue_) * baseBorrowIndex_ / BASE_INDEX_SCALE);
+      return -int104(uint104(principalValue_) * baseBorrowIndex_ / uint64(BASE_INDEX_SCALE));
     }
   }
 
