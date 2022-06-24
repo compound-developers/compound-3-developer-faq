@@ -6,17 +6,17 @@ This repository contains code examples for frequent Compound III developer tasks
 
 See `contracts/MyContract.sol` for Solidity examples, and also the individual JavaScript files in `examples/` for the following cases:
 
-- How do I supply collateral to Compound III?
-- How do I borrow the base asset from Compound III?
-- How do I get an asset price from the Compound III protocol's perspective?
-- How do I get the Supply or Borrow APR from the protocol?
-- How do I get the borrow capacity for a Compound III account?
-- How do I get the borrow and liquidate collateral factors for a Compound III asset?
-- How do I get the principal amount of asset for a Compound III account?
-- How do I calculate the interest earned by a Compound III account?
-- How do I repay my whole borrow precisely?
-- How do I calculate the APR of COMP rewards?
-- How do I find out the amount of COMP rewards currently accrued for my account?
+- How do I supply collateral to Compound III? ([supply-withdraw-example.js](examples/supply-withdraw-example.js))
+- How do I borrow the base asset from Compound III? ([borrow-repay-example.js](examples/borrow-repay-example.js))
+- How do I get an asset price from the Compound III protocol's perspective? ([get-a-price.js](examples/get-a-price.js))
+- How do I get the Supply or Borrow APR from the protocol? ([get-apr-example.js](examples/get-apr-example.js))
+- How do I get the borrow capacity for a Compound III account? ([get-borrowable-amount.js](examples/get-borrowable-amount.js))
+- How do I get the borrow and liquidate collateral factors for a Compound III asset? ([get-cf-examples.js](examples/get-cf-examples.js))
+- How do I get the principal amount of asset for a Compound III account? ([get-principal-example.js](examples/get-principal-example.js))
+- How do I calculate the interest earned by a Compound III account? ([interest-earned-example.js](examples/interest-earned-example.js))
+- How do I repay my whole borrow precisely? ([repay-full-borrow-example.js](examples/repay-full-borrow-example.js))
+- How do I calculate the APR of COMP rewards? ([get-apr-example.js](examples/get-apr-example.js))
+- How do I find out the amount of COMP rewards currently accrued for my account? ([claim-reward-example.js](examples/claim-reward-example.js))
 - TODO: How do I find out the TVL? (whole protocol example and per collateral example)
 
 ## Running The Examples
