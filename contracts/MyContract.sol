@@ -102,6 +102,21 @@ contract MyContract {
   }
 
   /*
+   * Supply an asset that this contract holds to Compound III
+   */
+  function supply(address asset, uint amount) public {
+    ERC20(asset).approve(cometAddress, amount);
+    Comet(cometAddress).supply(asset, amount);
+  }
+
+  /*
+   * Withdraws an asset from Compound III to this contract
+   */
+  function withdraw(address asset, uint amount) public {
+    Comet(cometAddress).withdraw(asset, amount);
+  }
+
+  /*
    * Get the current supply APR in Compound III
    */
   function getSupplyApr() public view returns (uint) {
