@@ -2,6 +2,7 @@ const assert = require('assert');
 const { TASK_NODE_CREATE_SERVER } = require('hardhat/builtin-tasks/task-names');
 const hre = require('hardhat');
 const ethers = require('ethers');
+const { resetForkedChain } = require('./common.js');
 const networks = require('./addresses.json');
 const net = 'kovan';
 
@@ -60,7 +61,7 @@ describe("Repay an entire Compound III account's borrow", function () {
   });
 
   beforeEach(async () => {
-    await resetForkedChain();
+    await resetForkedChain(hre, providerUrl, blockNumber);
     deployment = await myContractFactory.deploy(cometAddress);
   });
 
@@ -120,21 +121,6 @@ describe("Repay an entire Compound III account's borrow", function () {
     console.log('\tBorrow Balance after full repayment', +borrowBalance.toString() / baseAssetMantissa);
   });
 });
-
-async function resetForkedChain() {
-  // Parent directory's hardhat.config.js needs these to be set
-  await hre.network.provider.request({
-    method: 'hardhat_reset',
-    params: [{
-      forking: {
-        jsonRpcUrl: providerUrl,
-        blockNumber,
-      },
-      gasPrice: 0,
-      initialBaseFeePerGas: 0,
-    }]
-  });
-}
 
 async function advanceBlockHeight(blocks) {
   const txns = [];
