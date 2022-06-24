@@ -79,7 +79,6 @@ interface ERC20 {
 
 contract MyContract {
   address public cometAddress;
-  uint constant public MANTISSA = 1e18;
   uint constant public DAYS_PER_YEAR = 365;
   uint constant public SECONDS_PER_DAY = 60 * 60 * 24;
   uint constant public SECONDS_PER_YEAR = SECONDS_PER_DAY * DAYS_PER_YEAR;
