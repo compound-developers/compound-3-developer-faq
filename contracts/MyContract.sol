@@ -37,6 +37,11 @@ library CometStructs {
     uint128 balance;
     uint128 _reserved;
   }
+
+  struct RewardOwed {
+    address token;
+    uint owed;
+  }
 }
 
 interface Comet {
@@ -70,6 +75,11 @@ interface Comet {
   function totalBorrow() external view returns (uint256);
 
   function baseIndexScale() external pure returns (uint64);
+}
+
+interface CometRewards {
+  function getRewardOwed(address comet, address account) external returns (CometStructs.RewardOwed memory);
+  function claim(address comet, address src, bool shouldAccrue) external;
 }
 
 interface ERC20 {
@@ -194,6 +204,20 @@ contract MyContract {
   function getCompoundPrice(address singleAssetPriceFeed) public view returns (uint) {
     Comet comet = Comet(cometAddress);
     return comet.getPrice(singleAssetPriceFeed);
+  }
+
+  /*
+   * Gets the amount of reward tokens due to this contract address
+   */
+  function getRewardsOwed(address rewardsContract) public returns (uint) {
+    return CometRewards(rewardsContract).getRewardOwed(cometAddress, address(this)).owed;
+  }
+
+  /*
+   * Claims the reward tokens due to this contract address
+   */
+  function claimCometRewards(address rewardsContract) public {
+    CometRewards(rewardsContract).claim(cometAddress, address(this), true);
   }
 
   function presentValue(
