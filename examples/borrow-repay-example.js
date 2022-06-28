@@ -111,9 +111,12 @@ describe("Compound III Borrow Examples", function () {
     // Repay some of the open borrow
     const repayAmount = 250; // USDC
 
+    console.log('\tApproving to repay the borrow...', repayAmount);
     tx = await usdc.approve(cometAddress, (repayAmount * baseAssetMantissa).toString());
     await tx.wait(1);
 
+    // We don't have enough of the base asset to repay the borrow principal plus accrued interest
+    console.log('\tRepaying some of the open borrow...', repayAmount);
     tx = await comet.supply(usdcAddress, repayAmount * baseAssetMantissa);
     await tx.wait(1);
 
@@ -157,6 +160,8 @@ describe("Compound III Borrow Examples", function () {
     // Repay some of the open borrow
     const repayAmount = 250; // USDC
 
+    // We don't have enough of the base asset to repay the borrow principal plus accrued interest
+    console.log('\tRepaying some of the open borrow...', repayAmount);
     tx = await MyContract.supply(usdcAddress, repayAmount * baseAssetMantissa);
     await tx.wait(1);
 
