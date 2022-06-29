@@ -17,7 +17,7 @@ See `contracts/MyContract.sol` for Solidity examples, and also the individual Ja
 - How do I repay my whole borrow precisely? ([repay-full-borrow-example.js](examples/repay-full-borrow-example.js))
 - How do I calculate the APR of COMP rewards? ([get-apr-example.js](examples/get-apr-example.js))
 - How do I find out the amount of COMP rewards currently accrued for my account? ([claim-reward-example.js](examples/claim-reward-example.js))
-- TODO: How do I find out the TVL? (whole protocol example and per collateral example)
+- How do I find out the TVL? ([tvl-example.js](examples/tvl-example.js))
 
 ## Running The Examples
 
