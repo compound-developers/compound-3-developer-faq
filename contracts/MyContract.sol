@@ -42,6 +42,11 @@ library CometStructs {
     address token;
     uint owed;
   }
+
+  struct TotalsCollateral {
+    uint128 totalSupplyAsset;
+    uint128 _reserved;
+  }
 }
 
 interface Comet {
@@ -75,6 +80,8 @@ interface Comet {
   function totalBorrow() external view returns (uint256);
 
   function baseIndexScale() external pure returns (uint64);
+
+  function totalsCollateral(address asset) external view returns (CometStructs.TotalsCollateral memory);
 }
 
 interface CometRewards {
@@ -84,7 +91,7 @@ interface CometRewards {
 
 interface ERC20 {
   function approve(address spender, uint256 amount) external returns (bool);
-  function decimals() external returns (uint);
+  function decimals() external view returns (uint);
 }
 
 contract MyContract {
@@ -233,6 +240,31 @@ contract MyContract {
    */
   function claimCometRewards(address rewardsContract) public {
     CometRewards(rewardsContract).claim(cometAddress, address(this), true);
+  }
+
+  /*
+   * Gets the Compound III TVL in USD scaled up by 1e8
+   */
+  function getTvl() public view returns (uint) {
+    Comet comet = Comet(cometAddress);
+
+    uint baseScale = 10 ** ERC20(cometAddress).decimals();
+    uint basePrice = getCompoundPrice(comet.baseTokenPriceFeed());
+    uint totalSupplyBase = comet.totalSupply();
+
+    uint tvlUsd = totalSupplyBase * basePrice / baseScale;
+
+    uint8 numAssets = comet.numAssets();
+    for (uint8 i = 0; i < numAssets; i++) {
+      CometStructs.AssetInfo memory asset = comet.getAssetInfo(i);
+      CometStructs.TotalsCollateral memory tc = comet.totalsCollateral(asset.asset);
+      uint price = getCompoundPrice(asset.priceFeed);
+      uint scale = 10 ** ERC20(asset.asset).decimals();
+
+      tvlUsd += tc.totalSupplyAsset * price / scale;
+    }
+
+    return tvlUsd;
   }
 
   function presentValue(
