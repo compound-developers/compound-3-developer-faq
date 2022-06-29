@@ -102,6 +102,7 @@ npx hardhat node
 
 ## In another command line window:
 cd comet/
+
 ## This deploys to the running local ethereum node
 ## It also writes deployment information to ./deployments/localhost/
 yarn deploy --network localhost
