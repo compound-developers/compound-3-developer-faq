@@ -101,6 +101,7 @@ contract MyContract {
   uint constant public SECONDS_PER_YEAR = SECONDS_PER_DAY * DAYS_PER_YEAR;
   uint public BASE_MANTISSA;
   uint public BASE_INDEX_SCALE;
+  uint constant public MAX_UINT = type(uint).max;
 
   constructor(address _cometAddress) {
     cometAddress = _cometAddress;
@@ -121,6 +122,14 @@ contract MyContract {
    */
   function withdraw(address asset, uint amount) public {
     Comet(cometAddress).withdraw(asset, amount);
+  }
+
+  /*
+   * Repays an entire borrow of the base asset from Compound III
+   */
+  function repayFullBorrow(address baseAsset) public {
+    ERC20(baseAsset).approve(cometAddress, MAX_UINT);
+    Comet(cometAddress).supply(baseAsset, MAX_UINT);
   }
 
   /*

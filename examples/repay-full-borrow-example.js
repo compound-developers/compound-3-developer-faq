@@ -23,11 +23,18 @@ const wethAbi = [
   'function deposit() payable',
   'function balanceOf(address) returns (uint)',
   'function approve(address, uint) returns (bool)',
+  'function transfer(address, uint)',
 ];
 
 const stdErc20Abi = [
   'function approve(address, uint) returns (bool)',
   'function transfer(address, uint)',
+];
+
+const myContractAbi = [
+  'function supply(address asset, uint amount) public',
+  'function withdraw(address asset, uint amount) public',
+  'function repayFullBorrow(address baseAsset) public',
 ];
 
 let jsonRpcServer, deployment, cometAddress, myContractFactory, baseAssetAddress, wethAddress;
@@ -69,7 +76,7 @@ describe("Repay an entire Compound III account's borrow", function () {
     await jsonRpcServer.close();
   });
 
-  it('Repays an entire borrow without missing latest block interest', async () => {
+  it('Repays an entire borrow without missing latest block interest using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const signer = provider.getSigner(addresses[0]);
     const comet = new ethers.Contract(cometAddress, cometAbi, signer);
@@ -93,6 +100,7 @@ describe("Repay an entire Compound III account's borrow", function () {
     console.log('\tExecuting initial borrow of the base asset from Compound...');
     console.log('\tBorrow size:', borrowSize);
 
+    // Do borrow
     tx = await comet.withdraw(usdcAddress, (borrowSize * baseAssetMantissa).toString());
     await tx.wait(1);
 
@@ -118,6 +126,56 @@ describe("Repay an entire Compound III account's borrow", function () {
     await tx.wait(1);
 
     borrowBalance = await comet.callStatic.borrowBalanceOf(addresses[0]);
+    console.log('\tBorrow Balance after full repayment', +borrowBalance.toString() / baseAssetMantissa);
+  });
+
+  it('Repays an entire borrow without missing latest block interest using Solidity', async () => {
+    const me = addresses[0];
+    const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
+    const signer = provider.getSigner(me);
+    const comet = new ethers.Contract(cometAddress, cometAbi, signer);
+    const MyContract = new ethers.Contract(deployment.address, myContractAbi, signer);
+    const weth = new ethers.Contract(wethAddress, wethAbi, signer);
+    const wethMantissa = 1e18; // WETH and ETH have 18 decimal places
+    const usdc = new ethers.Contract(baseAssetAddress, stdErc20Abi, signer);
+    const baseAssetMantissa = 1e6; // USDC has 6 decimal places
+
+    let tx = await weth.deposit({ value: ethers.utils.parseEther('10') });
+    await tx.wait(1);
+
+    console.log('\tTransferring WETH to MyContract to use as collateral...');
+    tx = await weth.transfer(MyContract.address, ethers.utils.parseEther('10'));
+    await tx.wait(1);
+
+    console.log('\tSending initial supply to Compound...');
+    tx = await MyContract.supply(wethAddress, ethers.utils.parseEther('10'));
+    await tx.wait(1);
+
+    // Accounts cannot hold a borrow smaller than baseBorrowMin (1000 USDC).
+    const borrowSize = 1000;
+    console.log('\tExecuting initial borrow of the base asset from Compound...');
+    console.log('\tBorrow size:', borrowSize);
+
+    // Do borrow
+    tx = await MyContract.withdraw(usdcAddress, (borrowSize * baseAssetMantissa).toString());
+    await tx.wait(1);
+
+    // accrue some interest
+    console.log('\tFast forwarding 100 blocks to accrue some borrower interest...');
+    await advanceBlockHeight(100);
+
+    borrowBalance = await comet.callStatic.borrowBalanceOf(MyContract.address);
+    console.log('\tBorrow Balance after some interest accrued', +borrowBalance.toString() / baseAssetMantissa);
+
+    // For example purposes, get extra USDC so we can pay off the 
+    //     original borrow plus the accrued borrower interest
+    await seedWithBaseToken(MyContract.address, 5);
+
+    console.log('\tRepaying the entire borrow...');
+    tx = await MyContract.repayFullBorrow(usdcAddress);
+    await tx.wait(1);
+
+    borrowBalance = await comet.callStatic.borrowBalanceOf(MyContract.address);
     console.log('\tBorrow Balance after full repayment', +borrowBalance.toString() / baseAssetMantissa);
   });
 });
