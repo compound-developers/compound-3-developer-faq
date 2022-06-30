@@ -76,7 +76,7 @@ describe("Compound III Borrow Examples", function () {
     await jsonRpcServer.close();
   });
 
-  it('Borrows the base asset from Compound', async () => {
+  it('Borrows the base asset from Compound using JS', async () => {
     const me = addresses[0];
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const signer = provider.getSigner(me);

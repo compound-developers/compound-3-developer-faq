@@ -52,7 +52,7 @@ describe("Find out an asset's present price according to Compound III", function
     await jsonRpcServer.close();
   });
 
-  it('Finds the price of WBTC and USDC', async () => {
+  it('Finds the price of WBTC and USDC using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
     const wbtc = networks[net].WBTC;
@@ -70,7 +70,7 @@ describe("Find out an asset's present price according to Compound III", function
     console.log('\tUSDC Price', usdcPrice);
   });
 
-  it('Runs the solidity examples', async () => {
+  it('Finds the price of WBTC and USDC using Solidity', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
 

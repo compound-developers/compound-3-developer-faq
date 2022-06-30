@@ -57,7 +57,7 @@ describe("Find an account's Compound III base asset interest earned", function (
   });
 
   // This example only works for accounts that have not ever borrowed
-  it('Finds the interest earned of base asset', async () => {
+  it('Finds the interest earned of base asset using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const base = new ethers.Contract(baseAssetAddress, baseAbi, provider);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);

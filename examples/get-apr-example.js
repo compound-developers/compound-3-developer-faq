@@ -59,7 +59,7 @@ describe('Calculating the Compound III APRs', function () {
     await jsonRpcServer.close();
   });
 
-  it('Calculates the Supply APR using JavaScript', async () => {
+  it('Calculates the Supply APR using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
@@ -70,7 +70,7 @@ describe('Calculating the Compound III APRs', function () {
     console.log('\tJS - Supply APR', supplyApr, '%');
   });
 
-  it('Calculates the Borrow APR using JavaScript', async () => {
+  it('Calculates the Borrow APR using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
@@ -81,7 +81,7 @@ describe('Calculating the Compound III APRs', function () {
     console.log('\tJS - Borrow APR', borrowApr, '%');
   });
 
-  it('Calculates the COMP Reward APRs using JavaScript', async () => {
+  it('Calculates the COMP Reward APRs using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
@@ -112,7 +112,7 @@ describe('Calculating the Compound III APRs', function () {
     console.log('\tJS - Borrow Base Asset COMP Reward APR', borrowCompRewardApr, '%');
   });
 
-  it('Calculates the COMP Reward APYs using JavaScript', async () => {
+  it('Calculates the COMP Reward APYs using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
@@ -143,7 +143,7 @@ describe('Calculating the Compound III APRs', function () {
     console.log('\tJS - Borrow Base Asset COMP Reward APY', borrowCompApy, '%');
   });
 
-  it('Runs COMP Reward APR solidity examples', async () => {
+  it('Runs COMP Reward APR examples using Solidity', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
 

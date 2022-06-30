@@ -56,7 +56,7 @@ describe("Find an account's Compound III principal base asset supplied", functio
     await jsonRpcServer.close();
   });
 
-  it('Finds the original supplied amount of base asset', async () => {
+  it('Finds the original supplied amount of base asset using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const base = new ethers.Contract(baseAssetAddress, baseAbi, provider);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);

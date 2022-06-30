@@ -60,7 +60,7 @@ describe("Find a Compound III asset collateral factors", function () {
     await jsonRpcServer.close();
   });
 
-  it('Finds the collateral and liquidation factors for an asset', async () => {
+  it('Finds the collateral and liquidation factors for an asset using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
@@ -71,7 +71,7 @@ describe("Find a Compound III asset collateral factors", function () {
     console.log('\tliquidateCollateralFactor', +liquidateCollateralFactor.toString() / 1e18 * 100);
   });
 
-  it('Runs the solidity examples', async () => {
+  it('Finds the collateral and liquidation factors for an asset using Solidity', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
 

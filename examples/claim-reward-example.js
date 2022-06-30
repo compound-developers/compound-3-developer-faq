@@ -58,7 +58,7 @@ describe("Reward token operations for Compound III", function () {
     await jsonRpcServer.close();
   });
 
-  it('Gets the current amount of reward token due to an account', async () => {
+  it('Gets the current amount of reward token due to an account using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const rewards = new ethers.Contract(rewardsAddress, rewardAbi, provider);
 
@@ -70,7 +70,7 @@ describe("Reward token operations for Compound III", function () {
     console.log('\tJS - COMP token rewards due to the account', +amount.toString() / compTokenMantissa);
   });
 
-  it('Claims and transfers the current amount of reward token due to an account', async () => {
+  it('Claims and transfers the current amount of reward token due to an account using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const signer = provider.getSigner(addresses[0]);
     const rewards = new ethers.Contract(rewardsAddress, rewardAbi, signer);
@@ -83,7 +83,7 @@ describe("Reward token operations for Compound III", function () {
     console.log('\tJS - COMP tokens claimed and transferred to the account');
   });
 
-  it('Runs reward solidity examples', async () => {
+  it('Runs rewards examples using Solidity', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const signer = provider.getSigner(addresses[0]);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, signer);

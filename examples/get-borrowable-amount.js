@@ -62,7 +62,7 @@ describe("Find an account's present limits on borrowing from Compound III", func
     await jsonRpcServer.close();
   });
 
-  it('Calculates the borrow capacity of an account that has supplied collateral', async () => {
+  it('Calculates the borrow capacity of an account that has supplied collateral using JS', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const comet = new ethers.Contract(cometAddress, cometAbi, provider);
 
@@ -116,7 +116,7 @@ describe("Find an account's present limits on borrowing from Compound III", func
     console.log('\tAlready Borrowed amount (base)', borrowedInBase);
   });
 
-  it('Runs the solidity examples', async () => {
+  it('Calculates the borrow capacity of an account that has supplied collateral using Solidity', async () => {
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const MyContract = new ethers.Contract(deployment.address, myContractAbi, provider);
 

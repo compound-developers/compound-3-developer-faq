@@ -75,7 +75,7 @@ describe("Compound III Supply Examples", function () {
     await jsonRpcServer.close();
   });
 
-  it('Supplies collateral and then withdraws it', async () => {
+  it('Supplies collateral and then withdraws it using JS', async () => {
     const me = addresses[0];
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const signer = provider.getSigner(me);
@@ -105,7 +105,7 @@ describe("Compound III Supply Examples", function () {
     console.log('\tMy current WETH collateral balance:', +collateralBalance.toString() / wethMantissa);
   });
 
-  it('Supplies collateral and then withdraws it using solidity', async () => {
+  it('Supplies collateral and then withdraws it using Solidity', async () => {
     const me = addresses[0];
     const provider = new ethers.providers.JsonRpcProvider(jsonRpcUrl);
     const signer = provider.getSigner(me);
