@@ -5,7 +5,7 @@ require('@nomiclabs/hardhat-ethers');
 // const chainId = 1; // 43113
 
 const providerUrl = process.env.KOVAN_PROVIDER_URL;
-const blockNumber = 32439125;
+const blockNumber = 33218700;
 const chainId = 42;
 
 // Do not use this mnemonic outside of localhost tests!

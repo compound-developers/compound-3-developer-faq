@@ -14,7 +14,7 @@
     "@compound-finance/compound-js": "^0.4.4",
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "ethers": "^5.6.1",
-    "hardhat": "^2.9.2",
+    "hardhat": "^2.10.1",
     "mocha": "^9.2.2"
   }
 }
