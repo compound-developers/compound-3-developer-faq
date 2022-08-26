@@ -80,7 +80,7 @@ Use the spider functionality in the Compound III repository. The addresses can t
 git clone https://github.com/compound-finance/comet.git
 cd comet/
 yarn
-npx hardhat spider --network mainnet
+npx hardhat spider --deployment mainnet
 ```
 
 ## How do I deploy Compound III?
