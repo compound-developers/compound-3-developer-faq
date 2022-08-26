@@ -4,7 +4,7 @@ const hre = require('hardhat');
 const ethers = require('ethers');
 const { resetForkedChain } = require('./common.js');
 const networks = require('./addresses.json');
-const net = 'kovan';
+const net = hre.config.cometInstance;
 
 const jsonRpcUrl = 'http://127.0.0.1:8545';
 const providerUrl = hre.config.networks.hardhat.forking.url;

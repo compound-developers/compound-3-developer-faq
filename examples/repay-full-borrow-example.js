@@ -4,7 +4,7 @@ const hre = require('hardhat');
 const ethers = require('ethers');
 const { resetForkedChain } = require('./common.js');
 const networks = require('./addresses.json');
-const net = 'kovan';
+const net = hre.config.cometInstance;
 
 const jsonRpcUrl = 'http://127.0.0.1:8545';
 const providerUrl = hre.config.networks.hardhat.forking.url;
@@ -95,7 +95,7 @@ describe("Repay an entire Compound III account's borrow", function () {
     tx = await comet.supply(wethAddress, ethers.utils.parseEther('10'));
     await tx.wait(1);
 
-    // Accounts cannot hold a borrow smaller than baseBorrowMin (1000 USDC).
+    // Accounts cannot hold a borrow smaller than baseBorrowMin (100 USDC).
     const borrowSize = 1000;
     console.log('\tExecuting initial borrow of the base asset from Compound...');
     console.log('\tBorrow size:', borrowSize);
@@ -151,7 +151,7 @@ describe("Repay an entire Compound III account's borrow", function () {
     tx = await MyContract.supply(wethAddress, ethers.utils.parseEther('10'));
     await tx.wait(1);
 
-    // Accounts cannot hold a borrow smaller than baseBorrowMin (1000 USDC).
+    // Accounts cannot hold a borrow smaller than baseBorrowMin (100 USDC).
     const borrowSize = 1000;
     console.log('\tExecuting initial borrow of the base asset from Compound...');
     console.log('\tBorrow size:', borrowSize);

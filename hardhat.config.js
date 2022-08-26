@@ -1,12 +1,33 @@
 require('@nomiclabs/hardhat-ethers');
 
-// const providerUrl = process.env.FUJI_PROVIDER_URL;
-// const blockNumber = 6184762;
-// const chainId = 1; // 43113
+const cometInstance = 'usdc-mainnet';
 
-const providerUrl = process.env.KOVAN_PROVIDER_URL;
-const blockNumber = 33218700;
-const chainId = 42;
+// Optionally, you can hardcode provider URLs here
+const connections = {
+  'usdc-mainnet': {
+    providerUrl: process.env.MAINNET_PROVIDER_URL,
+    blockNumber: 15415000, // 2022-08-26T11:06:22.000Z
+    chainId: 1,
+  },
+  'usdc-kovan': {
+    providerUrl: process.env.KOVAN_PROVIDER_URL,
+    blockNumber: 33218700,
+    chainId: 42,
+  },
+  'usdc-fuji': { // Warning, Fuji instance is not properly configured on chain
+    providerUrl: process.env.FUJI_PROVIDER_URL,
+    blockNumber: 6184762,
+    chainId: 1, // 43113
+  }
+};
+
+const { providerUrl, blockNumber, chainId } = connections[cometInstance];
+
+if (!providerUrl) {
+  console.error('Cannot connect to the blockchain.');
+  console.error('Add a provider URL in the hardhat.config.js file.');
+  process.exit(1);
+}
 
 // Do not use this mnemonic outside of localhost tests!
 const mnemonic = 'romance zebra roof insect stem water kiwi park acquire domain gossip second';
@@ -17,6 +38,7 @@ if (!providerUrl) {
 }
 
 module.exports = {
+  cometInstance, // this tells the test scripts which addresses to use
   testProviderUrl: providerUrl,
   testBlockNumber: blockNumber,
   solidity: {

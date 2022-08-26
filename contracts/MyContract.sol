@@ -82,6 +82,9 @@ interface Comet {
   function baseIndexScale() external pure returns (uint64);
 
   function totalsCollateral(address asset) external view returns (CometStructs.TotalsCollateral memory);
+
+  function baseMinForRewards() external view returns (uint256);
+  function baseToken() external view returns (address);
 }
 
 interface CometRewards {
@@ -102,6 +105,10 @@ contract MyContract {
   uint public BASE_MANTISSA;
   uint public BASE_INDEX_SCALE;
   uint constant public MAX_UINT = type(uint).max;
+
+  event AssetInfoLog(CometStructs.AssetInfo);
+  event LogUint(string, uint);
+  event LogAddress(string, address);
 
   constructor(address _cometAddress) {
     cometAddress = _cometAddress;
@@ -230,6 +237,22 @@ contract MyContract {
   }
 
   /*
+   * Get the price feed address for an asset
+   */
+  function getPriceFeedAddress(address asset) public view returns (address) {
+    Comet comet = Comet(cometAddress);
+    return comet.getAssetInfoByAddress(asset).priceFeed;
+  }
+
+  /*
+   * Get the price feed address for the base token
+   */
+  function getBaseTokenPriceFeed() public view returns (address) {
+    Comet comet = Comet(cometAddress);
+    return comet.baseTokenPriceFeed();
+  }
+
+  /*
    * Get the current price of an asset from the protocol's persepctive
    */
   function getCompoundPrice(address singleAssetPriceFeed) public view returns (uint) {
@@ -274,6 +297,26 @@ contract MyContract {
     }
 
     return tvlUsd;
+  }
+
+  /*
+   * Demonstrates how to get information about all assets supported
+   */
+  function getAllAssetInfos() public {
+    Comet comet = Comet(cometAddress);
+    uint8 numAssets = comet.numAssets();
+
+    for (uint8 i = 0; i < numAssets; i++) {
+      CometStructs.AssetInfo memory asset = comet.getAssetInfo(i);
+      emit AssetInfoLog(asset);
+    }
+
+    emit LogUint('baseMinForRewards', comet.baseMinForRewards());
+    emit LogUint('baseScale', comet.baseScale());
+    emit LogAddress('baseToken', comet.baseToken());
+    emit LogAddress('baseTokenPriceFeed', comet.baseTokenPriceFeed());
+    emit LogUint('baseTrackingBorrowSpeed', comet.baseTrackingBorrowSpeed());
+    emit LogUint('baseTrackingSupplySpeed', comet.baseTrackingSupplySpeed());
   }
 
   function presentValue(

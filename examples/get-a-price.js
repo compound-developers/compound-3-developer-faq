@@ -3,7 +3,7 @@ const { TASK_NODE_CREATE_SERVER } = require('hardhat/builtin-tasks/task-names');
 const hre = require('hardhat');
 const ethers = require('ethers');
 const networks = require('./addresses.json');
-const net = 'kovan';
+const net = hre.config.cometInstance;
 
 const jsonRpcUrl = 'http://127.0.0.1:8545';
 const providerUrl = hre.config.networks.hardhat.forking.url;
