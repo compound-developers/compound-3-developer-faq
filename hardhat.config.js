@@ -1,19 +1,26 @@
 require('@nomiclabs/hardhat-ethers');
 
+// Choose the Comet instance to run tests against using the `connections` object
 const cometInstance = 'usdc-mainnet';
 
 // Optionally, you can hardcode provider URLs here
 const connections = {
   'usdc-mainnet': {
     providerUrl: process.env.MAINNET_PROVIDER_URL,
-    blockNumber: 15415000, // 2022-08-26T11:06:22.000Z
+    // blockNumber: 15415000, // 2022-08-26T11:06:22.000Z
+    blockNumber: 16192000, // 2022-12-15T18:51:47.000Z
     chainId: 1,
   },
-  'usdc-kovan': {
-    providerUrl: process.env.KOVAN_PROVIDER_URL,
-    blockNumber: 33218700,
-    chainId: 42,
+  'usdc-goerli': {
+    providerUrl: process.env.GOERLI_PROVIDER_URL,
+    blockNumber: 8141000, // 2022-12-15T19:00:48.000Z
+    chainId: 5,
   },
+  // 'usdc-kovan': { // Consider this entire testnet deprecated
+  //   providerUrl: process.env.KOVAN_PROVIDER_URL,
+  //   blockNumber: 33218700,
+  //   chainId: 42,
+  // },
   'usdc-fuji': { // Warning, Fuji instance is not properly configured on chain
     providerUrl: process.env.FUJI_PROVIDER_URL,
     blockNumber: 6184762,
