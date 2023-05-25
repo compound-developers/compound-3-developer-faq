@@ -41,7 +41,7 @@ describe("Find an account's present limits on borrowing from Compound III", func
     console.log('\n    Running a hardhat local evm fork of a public net...\n');
 
     jsonRpcServer = await hre.run(TASK_NODE_CREATE_SERVER, {
-      hostname: 'localhost',
+      hostname: '127.0.0.1',
       port: 8545,
       provider: hre.network.provider
     });
