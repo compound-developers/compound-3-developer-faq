@@ -38,7 +38,7 @@ const cometInstance = 'usdc-mainnet';
 
 Use the mocha descriptions to run subsets of tests. The Comet instances supported by the tests are listed in `hardhat.config.js`.
 
-- To run all tests: `npm test`
+- To run all tests: `npm test`. With the environment variable if not set already `MAINNET_PROVIDER_URL="__Alchemy_or_Infura_provider_URL_here__" npm test`.
 - To run a single file's tests: `npm test -- -g "Find an account's Compound III base asset interest earned"`
   - Use the description in the top (whole file) level describe block for the test file.
 - To run a single test: `npm test -- -g 'Finds the interest earned of base asset'`

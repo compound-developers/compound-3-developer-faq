@@ -98,7 +98,7 @@ describe("Finds asset price feeds for an instance of Compound III", function () 
     console.log('\n    Running a hardhat local evm fork of a public net...\n');
 
     jsonRpcServer = await hre.run(TASK_NODE_CREATE_SERVER, {
-      hostname: 'localhost',
+      hostname: '127.0.0.1',
       port: 8545,
       provider: hre.network.provider
     });
